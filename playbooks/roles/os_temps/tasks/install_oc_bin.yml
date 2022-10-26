@@ -24,16 +24,14 @@
     state: directory
   when: not (oc_need_install is defined and oc_need_install|bool == false)
 
-- name: "Query for OpenShift client compressed binary version {{ oc_version }}"
-  shell: curl -s https://github.com/openshift/origin/releases/{{ oc_version }} | grep {{ client_path }} | grep "href=" | head -1 | sed 's/.*<a href="\(.*\)" .*/https:\/\/github.com\1/' | cut -d'"' -f1
+- name: "Echo the OpenShift client compressed binary version {{ oc_version }}"
+  shell: echo "openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz"
   register: get_oc_bin
-  vars:
-    client_path: "{% if host_os == 'darwin' %}openshift-origin-client-tools-.*-mac.*.zip{% else %}openshift-origin-client-tools-.*-linux.*.tar.gz{% endif %}"
   when: not (oc_need_install is defined and oc_need_install|bool == false)
 
 - name: "Pull down and extract OpenShift client binary(oc) to {{ contra_env_setup_dir }}"
   unarchive:
-    src: "{{ get_oc_bin.stdout }}"
+    src: https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
     dest: "{{ contra_env_setup_dir }}"
     remote_src: yes
   when: not (oc_need_install is defined and oc_need_install|bool == false)
